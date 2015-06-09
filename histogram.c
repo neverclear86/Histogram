@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <windows.h>
 
-/* ヒストグラムを書く		*/
+/*    ヒストグラムを書く	*/
 
 FILE *inputTxtp;		//data.txt(入力ファイル)のポインタ
 FILE *inputp;			//data.csv(データ一時退避ファイル)のポインタ
