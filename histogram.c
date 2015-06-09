@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <windows.h>
 
-/* 15jn0108 Onogaki Kaichi 	*/
 /* ヒストグラムを書く		*/
 
 FILE *inputTxtp;		//data.txt(入力ファイル)のポインタ
