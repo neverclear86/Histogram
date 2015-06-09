@@ -2,28 +2,28 @@
 #include <stdlib.h>
 #include <windows.h>
 
-/* ƒqƒXƒgƒOƒ‰ƒ€‚ğ‘‚­		*/
+/*  ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’æ›¸ã		*/
 
-FILE *inputTxtp;		//data.txt(“ü—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-FILE *inputp;			//data.csv(ƒf[ƒ^ˆê‘Ş”ğƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-FILE *outputp;			//output.txt(o—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
+FILE *inputTxtp;		//data.txt(å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+FILE *inputp;			//data.csv(ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚é€€é¿ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+FILE *outputp;			//output.txt(å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
 
 
-void newCreate(int deci)	//data.txt‚ğì‚éAƒf[ƒ^‚ª–³‚¢‚Ì‚ğŒx
+void newCreate(int deci)	//data.txtã‚’ä½œã‚‹ã€ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã®ã‚’è­¦å‘Š
 {
 
-	if (deci == 0)			//data.txt‚ª‘¶İ‚µ‚È‚¢
+	if (deci == 0)			//data.txtãŒå­˜åœ¨ã—ãªã„
 	{
 		inputTxtp = fopen("data.txt", "w");
-		fprintf(inputTxtp, "”ÍˆÍ:\n");
-		MessageBox(NULL, TEXT("[data.txt]‚ğV‹Kì¬‚µ‚Ü‚µ‚½B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+		fprintf(inputTxtp, "ç¯„å›²:\n");
+		MessageBox(NULL, TEXT("[data.txt]ã‚’æ–°è¦ä½œæˆã—ã¾ã—ãŸã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+			TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 		fclose(inputTxtp);
 	}
-	else					//data.txt‚Éƒf[ƒ^‚ª‚È‚¢
+	else					//data.txtã«ãƒ‡ãƒ¼ã‚¿ãŒãªã„
 	{
-		MessageBox(NULL, TEXT("[data.txt]‚Éƒf[ƒ^‚ª–³‚¢‚©A”ÍˆÍ‚ª0‚Å‚·B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+		MessageBox(NULL, TEXT("[data.txt]ã«ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã‹ã€ç¯„å›²ãŒ0ã§ã™ã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+			TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 	}
 
 
@@ -36,20 +36,20 @@ void newCreate(int deci)	//data.txt‚ğì‚éAƒf[ƒ^‚ª–³‚¢‚Ì‚ğŒx
 int main(void)
 {
 
-	int range = 0;			//ƒf[ƒ^‚ğ‹æØ‚é”ÍˆÍ
-	int indat;				//ƒf[ƒ^‚ğ“ü‚ê‚é
-	int datMax;				//ƒf[ƒ^‚ÌÅ‘å’l
-	int datMin;				//ƒf[ƒ^‚ÌÅ¬’l
-	int cnt[100];			//ŠK‹‰‚²‚Æ‚Ì•p“x
-	int cntMax = 0;			//Å‘å•p“x
-	char histogram[50][50];	//ƒOƒ‰ƒt•`‰æ
-	int iMax;				//‹‰‚Ì”
-	int redunce;			//“YšŒvZ—p
+	int range = 0;			//ãƒ‡ãƒ¼ã‚¿ã‚’åŒºåˆ‡ã‚‹ç¯„å›²
+	int indat;				//ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚Œã‚‹
+	int datMax;				//ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤
+	int datMin;				//ãƒ‡ãƒ¼ã‚¿ã®æœ€å°å€¤
+	int cnt[100];			//éšç´šã”ã¨ã®é »åº¦
+	int cntMax = 0;			//æœ€å¤§é »åº¦
+	char histogram[50][50];	//ã‚°ãƒ©ãƒ•æç”»
+	int iMax;				//ç´šã®æ•°
+	int redunce;			//æ·»å­—è¨ˆç®—ç”¨
 	int i;
 	int j;
 
 
-	/*data.txt‚Ì“Ç‚İ‚İ*/
+	/*data.txtã®èª­ã¿è¾¼ã¿*/
 	inputTxtp = fopen("data.txt", "r");
 
 	if (inputTxtp == NULL)
@@ -58,7 +58,7 @@ int main(void)
 		return 1;
 	}
 
-	fscanf(inputTxtp, "”ÍˆÍ:%d", &range);
+	fscanf(inputTxtp, "ç¯„å›²:%d", &range);
 	if (range == 0)
 	{
 		newCreate(1);
@@ -66,13 +66,13 @@ int main(void)
 	}
 
 
-	/*ƒf[ƒ^‚ÌÅ‘å’lEÅ¬’l‚ğ‹‚ß‚é*/
-	/*ƒf[ƒ^‚ğƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚µ*/
+	/*ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ãƒ»æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹*/
+	/*ãƒ‡ãƒ¼ã‚¿ã‚’ãƒã‚¤ãƒŠãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—*/
 
 
 	inputp = fopen("data.csv", "wb");
 
-	if (fscanf(inputTxtp, "%d", &indat) > 0)		//‚P‚Â–Ú‚Ìƒf[ƒ^
+	if (fscanf(inputTxtp, "%d", &indat) > 0)		//ï¼‘ã¤ç›®ã®ãƒ‡ãƒ¼ã‚¿
 	{
 		datMax = indat;
 		datMin = indat;
@@ -86,7 +86,7 @@ int main(void)
 
 
 
-	while (fscanf(inputTxtp, "%d", &indat) > 0)		//‚Q‚Â–ÚˆÈ~
+	while (fscanf(inputTxtp, "%d", &indat) > 0)		//ï¼’ã¤ç›®ä»¥é™
 	{
 		if (datMax < indat)
 		{
@@ -102,9 +102,9 @@ int main(void)
 
 	}
 
-	iMax = (datMax - datMin) / range + 1;			//ƒqƒXƒgƒOƒ‰ƒ€‚Ì‰¡‚Ì”(cnt‚Ìg—p—Ê)
+	iMax = (datMax - datMin) / range + 1;			//ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã®æ¨ªã®æ•°(cntã®ä½¿ç”¨é‡)
 
-	/*cnt, histogram‚Ì‰Šú‰»*/
+	/*cnt, histogramã®åˆæœŸåŒ–*/
 
 	for (i = 0; i < iMax + 1; i++)
 	{
@@ -116,12 +116,12 @@ int main(void)
 	}
 
 
-	redunce = datMin / range;						//“YšŒvZ—p
+	redunce = datMin / range;						//æ·»å­—è¨ˆç®—ç”¨
 
-	fclose(inputp);									//ƒf[ƒ^‚ğˆê“x•Â‚¶‚ÄÅ‰‚©‚ç“Ç‚İ’¼‚·
+	fclose(inputp);									//ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€åº¦é–‰ã˜ã¦æœ€åˆã‹ã‚‰èª­ã¿ç›´ã™
 	inputp = fopen("data.csv", "rb");
 
-	/*ƒf[ƒ^‚ÌWŒv*/
+	/*ãƒ‡ãƒ¼ã‚¿ã®é›†è¨ˆ*/
 
 	while (fread(&indat, sizeof(int), 1, inputp) > 0)
 	{
@@ -130,7 +130,7 @@ int main(void)
 															cntMax;
 	}
 
-	/*ƒqƒXƒgƒOƒ‰ƒ€‚Ìì¬*/
+	/*ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã®ä½œæˆ*/
 
 	for (i = 0; i < iMax; i++)
 	{
@@ -148,8 +148,8 @@ int main(void)
 	}
 
 
-	/*ƒqƒXƒgƒOƒ‰ƒ€•`‰æˆ—*/
-	/*if‚ªG@‚Ç‚¤‚É‚©‚¹‚Ë‚Î*/
+	/*ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ æç”»å‡¦ç†*/
+	/*ifãŒé›‘ã€€ã©ã†ã«ã‹ã›ã­ã°*/
 	outputp = fopen("output.txt", "w");
 
 	for (j = cntMax ; j >= 0; j--)
@@ -215,7 +215,7 @@ int main(void)
 	fprintf(outputp, "   ");
 	for (i = 0; i < iMax; i++)
 	{
-		fprintf(outputp, "PPP");
+		fprintf(outputp, "ï¿£ï¿£ï¿£");
 	}
 	fprintf(outputp, "\n    ");
 	for (i = 0; i < iMax; i++)
@@ -234,8 +234,8 @@ int main(void)
 	}
 
 
-	MessageBox(NULL, TEXT("[output.txt]‚Éo—Í‚µ‚Ü‚µ‚½B"),
-		TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+	MessageBox(NULL, TEXT("[output.txt]ã«å‡ºåŠ›ã—ã¾ã—ãŸã€‚"),
+		TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 
 	/*CloseFiles*/
 	fclose(inputTxtp);
