@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <windows.h>
 
+#define	NUM		1000
+
 /* ヒストグラムを書く		*/
-
-FILE *inputTxtp;		//data.txt(入力ファイル)のポインタ
-FILE *inputp;			//data.csv(データ一時退避ファイル)のポインタ
-FILE *outputp;			//output.txt(出力ファイル)のポインタ
-
 
 void newCreate(int deci)	//data.txtを作る、データが無いのを警告
 {
+	FILE *inputTxtp;
 
 	if (deci == 0)			//data.txtが存在しない
 	{
@@ -31,23 +29,43 @@ void newCreate(int deci)	//data.txtを作る、データが無いのを警告
 }
 
 
+void initialize(int iMax, int *cnt, char histogram[][NUM])
+{
+	int i;
+	int j;
+
+	for (i = 0; i < iMax + 1; i++)
+	{
+		cnt[i] = 0;
+		for (j = 0; j < 50; j++)
+		{
+			histogram[i][j] = ' ';
+		}
+	}
+
+	return;
+}
+
+
 
 
 int main(void)
 {
+	FILE *inputTxtp;			//data.txt(入力ファイル)のポインタ
+	FILE *inputp;				//data.csv(データ一時退避ファイル)のポインタ
+	FILE *outputp;				//output.txt(出力ファイル)のポインタ
 
-	int range = 0;			//データを区切る範囲
-	int indat;				//データを入れる
-	int datMax;				//データの最大値
-	int datMin;				//データの最小値
-	int cnt[100];			//階級ごとの頻度
-	int cntMax = 0;			//最大頻度
-	char histogram[50][50];	//グラフ描画
-	int iMax;				//級の数
-	int redunce;			//添字計算用
+	int range = 0;				//データを区切る範囲
+	int indat;					//データを入れる
+	int datMax;					//データの最大値
+	int datMin;					//データの最小値
+	int cnt[NUM];				//階級ごとの頻度
+	int cntMax;					//最大頻度
+	char histogram[NUM][NUM];	//グラフ描画
+	int iMax;					//級の数
+	int redunce;				//最小級を添字0に合わせる
 	int i;
 	int j;
-
 
 	/*data.txtの読み込み*/
 	inputTxtp = fopen("data.txt", "r");
@@ -102,27 +120,23 @@ int main(void)
 
 	}
 
-	iMax = (datMax - datMin) / range + 1;			//ヒストグラムの横の数(cntの使用量)
+	//ヒストグラムの数(cntの使用量)を求める(iMax)
+	iMax = (datMax / range * range - datMin / range * range) / range + 1;		
+
 
 	/*cnt, histogramの初期化*/
+	initialize(iMax, cnt, histogram);
 
-	for (i = 0; i < iMax + 1; i++)
-	{
-		cnt[i] = 0;
-		for (j = 0; j < 20; j++)
-		{
-			histogram[i][j] = ' ';
-		}
-	}
+	/*最小級を添字0に合わせる*/
+	redunce = datMin / range;
 
-
-	redunce = datMin / range;						//添字計算用
 
 	fclose(inputp);									//データを一度閉じて最初から読み直す
 	inputp = fopen("data.csv", "rb");
 
 	/*データの集計*/
-
+	
+	cntMax = 0;
 	while (fread(&indat, sizeof(int), 1, inputp) > 0)
 	{
 		cnt[indat / range - redunce] += 1;
@@ -134,7 +148,7 @@ int main(void)
 
 	for (i = 0; i < iMax; i++)
 	{
-		for (j = 0; j < cntMax + 1; j++)
+		for (j = 0; j <= cntMax; j++)
 		{
 			if (cnt[i] > j)
 			{
@@ -149,25 +163,27 @@ int main(void)
 
 
 	/*ヒストグラム描画処理*/
-	/*ifが雑　どうにかせねば*/
+	/*ifが雑				*/
 	outputp = fopen("output.txt", "w");
-
+	
+	/* Y軸	*/
 	for (j = cntMax ; j >= 0; j--)
 	{
 		if (j % 5 == 0)
 		{
-			fprintf(outputp, "%d", j);
+			fprintf(outputp, "%2d", j);
 		}
 		else
 		{
-			fprintf(outputp, " ");
+			fprintf(outputp, "  ");
 		}
 		fprintf(outputp, "_| ");
-
+		
+		/* X軸	*/
 		for (i = 0; i < iMax; i++)
 		{
 			if (histogram[i][j] != '_')
-			{
+			{				
 				if (cnt[i] < cnt[i - 1])
 				{
 					fprintf(outputp, "    ");
@@ -183,52 +199,63 @@ int main(void)
 				{
 					fprintf(outputp, "%c", histogram[i][j]);
 				}
-
-			}
-			else if (cnt[i] == 0)
-			{
-				fprintf(outputp, "    ");
-			}
-			else if (cnt[i] < cnt[i - 1])
-			{
-				if (cnt[i] > cnt[i + 1])
-				{
-					fprintf(outputp, "____ ");
-				}
-				else
-				{
-					fprintf(outputp, "____");
-				}
-			}
-			else if (cnt[i] > cnt[i + 1])
-			{
-				fprintf(outputp, " ____ ");
 			}
 			else
 			{
-				fprintf(outputp, " ____");
+				if (cnt[i] == 0)
+				{
+					fprintf(outputp, "    ");
+					
+					if (cnt[i + 1] == 0)
+					{
+						fprintf(outputp, " ");
+					}
+				}
+				else if (cnt[i] < cnt[i - 1])
+				{
+					if (cnt[i] > cnt[i + 1])
+					{
+						fprintf(outputp, "____ ");
+					}
+					else
+					{
+						fprintf(outputp, "____");
+					}
+				}
+				else if (cnt[i] > cnt[i + 1])
+				{
+					fprintf(outputp, " ____ ");
+				}
+				else
+				{
+					fprintf(outputp, " ____");
+				}
 			}
 		}
 		fprintf(outputp, "\n");
 	}
-
-	fprintf(outputp, "   ");
+	while (datMin > 10000)
+	{
+		datMin = datMin / 1000;
+		range = range / 1000;
+	}
+	fprintf(outputp, "￣￣");
 	for (i = 0; i < iMax; i++)
 	{
 		fprintf(outputp, "￣￣￣");
 	}
-	fprintf(outputp, "\n    ");
+	fprintf(outputp, "\n     ");
 	for (i = 0; i < iMax; i++)
 	{
 		fprintf(outputp, " %4d", datMin / range * range + range * i);
 	}
-	fprintf(outputp, "\n    ");
+	fprintf(outputp, "\n     ");
 	for (i = 0; i < iMax; i++)
 	{
 		fprintf(outputp, "   | ", datMin / range * range + range * (i + 1) - 1);
 	}
-	fprintf(outputp, "\n    ");
-	for (i = 0; i < iMax; i++)
+	fprintf(outputp, "\n     ");
+	for (i = 0; i < iMax - 1; i++)
 	{
 		fprintf(outputp, " %4d", datMin / range * range + range * (i + 1) - 1);
 	}
@@ -241,6 +268,8 @@ int main(void)
 	fclose(inputTxtp);
 	fclose(inputp);
 	fclose(outputp);
+
+	remove("data.csv");
 
 	return 0;
 }
