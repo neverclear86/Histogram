@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 
@@ -8,35 +8,35 @@
 #define SPACE		' '
 #define SPACENUM	4
 
-/* ƒqƒXƒgƒOƒ‰ƒ€‚ğ‘‚­		*/
+/* ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’æ›¸ã		*/
 
 
-FILE *inputTxtp;			//data.txt(“ü—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-FILE *inputp;				//data.csv(ƒf[ƒ^ˆê‘Ş”ğƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-FILE *outputp;				//output.txt(o—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
+FILE *inputTxtp;			//data.txt(å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+FILE *inputp;				//data.csv(ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚é€€é¿ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+FILE *outputp;				//output.txt(å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
 
 
-//data.txt‚ğì‚éAƒf[ƒ^‚ª–³‚¢‚Ì‚ğŒx
+//data.txtã‚’ä½œã‚‹ã€ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã®ã‚’è­¦å‘Š
 void newCreate(int deci)
 {
 	FILE *inputTxtp;
 
-	if (deci == 0){			//data.txt‚ª‘¶İ‚µ‚È‚¢
+	if (deci == 0){			//data.txtãŒå­˜åœ¨ã—ãªã„
 		inputTxtp = fopen("data.txt", "w");
-		fprintf(inputTxtp, "”ÍˆÍ:\n");
-		MessageBox(NULL, TEXT("[data.txt]‚ğV‹Kì¬‚µ‚Ü‚µ‚½B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+		fprintf(inputTxtp, "ç¯„å›²:\n");
+		MessageBox(NULL, TEXT("[data.txt]ã‚’æ–°è¦ä½œæˆã—ã¾ã—ãŸã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+			TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 		fclose(inputTxtp);
 	}
-	else{					//data.txt‚Éƒf[ƒ^‚ª‚È‚¢
-		MessageBox(NULL, TEXT("[data.txt]‚Éƒf[ƒ^‚ª–³‚¢‚©A”ÍˆÍ‚ª0‚Å‚·B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+	else{					//data.txtã«ãƒ‡ãƒ¼ã‚¿ãŒãªã„
+		MessageBox(NULL, TEXT("[data.txt]ã«ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã‹ã€ç¯„å›²ãŒ0ã§ã™ã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+			TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 	}
 	
 	return;
 }
 
-//data.txt‚Ì“Ç‚İ‚İ
+//data.txtã®èª­ã¿è¾¼ã¿
 int openDataFile( FILE *inputTxtp)
 {
 	int range;
@@ -46,8 +46,8 @@ int openDataFile( FILE *inputTxtp)
 		return 0;
 	}
 
-	fscanf(inputTxtp, "”ÍˆÍ:%d", &range);
-	if (fscanf(inputTxtp, "”ÍˆÍ:%d", &range) == EOF){
+	fscanf(inputTxtp, "ç¯„å›²:%d", &range);
+	if (fscanf(inputTxtp, "ç¯„å›²:%d", &range) == EOF){
 		newCreate(1);
 		return 0;
 	}
@@ -55,7 +55,7 @@ int openDataFile( FILE *inputTxtp)
 	return range;
 }
 
-//ƒf[ƒ^‚ğˆêƒtƒ@ƒCƒ‹‚É‘‚«‚İEƒf[ƒ^‚ÌÅ‘å’lAÅ¬’l‚ğ‹‚ß‚é
+//ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã¿ãƒ»ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ã€æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹
 void readData(FILE *inputTxtp, FILE *inputp, int *datMax, int *datMin)
 {
 	int indat;
@@ -112,16 +112,13 @@ void aggregate(FILE *inputp,int *cnt, int *cntMax, int range, int redunce, int i
 	int indat;
 	int i;
 	
-	while (fread(&indat, sizeof(int), 1, inputp))
-	{
+	while (fread(&indat, sizeof(int), 1, inputp)){
 		cnt[indat / range - redunce] += 1;
 	}
 	
 	*cntMax = 0;
-	for(i = 0; i < iMax; i++)
-	{
-		if(*cntMax < cnt[i])
-		{
+	for(i = 0; i < iMax; i++){
+		if(*cntMax < cnt[i]){
 			*cntMax = cnt[i];
 		}
 	}
@@ -132,16 +129,12 @@ void makeHistogram(int iMax, int cntMax, int cnt[],char histogram[][NUM])
 	int i;
 	int j;
 	
-	for (i = 0; i < iMax; i++)
-	{
-		for (j = 0; j <= cntMax; j++)
-		{
-			if (cnt[i] > j)
-			{
+	for (i = 0; i < iMax; i++){
+		for (j = 0; j <= cntMax; j++){
+			if (cnt[i] > j){
 				histogram[i][j] = '|';
 			}
-			else if (cnt[i] == j)
-			{
+			else if (cnt[i] == j){
 				histogram[i][j] = '_';
 			}
 		}
@@ -152,13 +145,11 @@ void writer(char chara, int num)
 {
 	int i;
 	
-	if(chara == '_')
-	{
-		chara = ' ';
+	if(chara == '_' && num <= 1){
+		chara = SPACE;
 	}
 	
-	for( i = 0; i < num; i++)
-	{
+	for( i = 0; i < num; i++){
 		fprintf(outputp, "%c", chara);
 	}
 }
@@ -168,40 +159,37 @@ void drawHistogram(FILE *outputp, int iMax, int cntMax, int cnt[], char histogra
 	int i, j;
 	int flag;
 	
-	// Y²
-	for (j = cntMax ; j >= 0; j--)
-	{
-		if (j % 5 == 0)
-		{
+	// Yè»¸
+	for (j = cntMax ; j >= 0; j--){
+		if (j % 5 == 0){
 			fprintf(outputp, "%3d", j);
 		}
-		else
-		{
+		else{
 			writer(SPACE, 3);
 		}
 		fprintf(outputp, "_|");
 
 		flag = 0;
-		// X²
-		for (i = 0; i < iMax; i++)
-		{
-			if(flag == 0)
-			{
+		// Xè»¸
+		for (i = 0; i < iMax; i++){
+			if(flag == 0){
 				writer(histogram[i][j], 1);
 			}
 			
-			if(histogram[i][j] != '_')
-			{
-				writer(SPACE, SPACENUM);
+			if(histogram[i][j] != '_'){
+				if (j != 0){
+					writer(SPACE, SPACENUM);
+				}
+				else{
+					writer('_', SPACENUM);
+				}
 			}
-			else
-			{
-				fprintf(outputp, "____");
+			else{
+				writer('_', SPACENUM);
 			}
 			flag = 0;
 			
-			if(cnt[i] > cnt[i + 1])
-			{
+			if(cnt[i] > cnt[i + 1]){
 				writer(histogram[i][j], 1);
 				flag = 1;
 			}
@@ -209,38 +197,32 @@ void drawHistogram(FILE *outputp, int iMax, int cntMax, int cnt[], char histogra
 		fprintf(outputp, "\n");
 	}
 	
-	MessageBox(NULL, TEXT("[output.txt]‚Éo—Í‚µ‚Ü‚µ‚½B"),
-		TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
+	MessageBox(NULL, TEXT("[output.txt]ã«å‡ºåŠ›ã—ã¾ã—ãŸã€‚"),
+		TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
 }
 
 void axisLabel(FILE *outputp, int datMin, int range, int iMax)
 {
 	int i;
 	
-	while (datMin > 10000)
-	{
+	while (datMin > 10000){
 		datMin = datMin / 1000;
 		range = range / 1000;
 	}
-	fprintf(outputp, "P");
-	for (i = 0; i < iMax; i++)
-	{
-		fprintf(outputp, "PPP");
+	fprintf(outputp, "\n");
+	writer(SPACE, 5);
+	for (i = 0; i < iMax; i++){
+		fprintf(outputp, "%5d", datMin / range * range + range * i);
 	}
-	fprintf(outputp, "\n     ");
-	for (i = 0; i < iMax; i++)
-	{
-		fprintf(outputp, " %4d", datMin / range * range + range * i);
+	fprintf(outputp, "\n");
+	writer(SPACE, 5);
+	for (i = 0; i < iMax; i++){
+		fprintf(outputp, "   | ");
 	}
-	fprintf(outputp, "\n     ");
-	for (i = 0; i < iMax; i++)
-	{
-		fprintf(outputp, "   | ", datMin / range * range + range * (i + 1) - 1);
-	}
-	fprintf(outputp, "\n     ");
-	for (i = 0; i < iMax - 1; i++)
-	{
-		fprintf(outputp, " %4d", datMin / range * range + range * (i + 1) - 1);
+	fprintf(outputp, "\n");
+	writer(SPACE, 5);
+	for (i = 0; i < iMax - 1; i++){
+		fprintf(outputp, "%5d", datMin / range * range + range * (i + 1) - 1);
 	}
 	
 }
@@ -248,19 +230,17 @@ void axisLabel(FILE *outputp, int datMin, int range, int iMax)
 /**** main program ***********************************************************************/
 int main(void)
 {
-	int range;					//ƒf[ƒ^‚ğ‹æØ‚é”ÍˆÍ
-	int indat;					//Put data
-	int datMax;					//ƒf[ƒ^‚ÌÅ‘å’l
-	int datMin;					//ƒf[ƒ^‚ÌÅ¬’l
-	int redunce;				//Å¬‹‰‚ğ“Yš0‚É‡‚í‚¹‚é
-	int iMax;					//‹‰‚Ì”
-	int cnt[NUM];				//ŠK‹‰‚²‚Æ‚Ì•p“x
-	int cntMax;					//Å‘å•p“x
-	char histogram[NUM][NUM];	//ƒOƒ‰ƒt•`‰æ
-	int i;
-	int j;
+	int		range;					//ãƒ‡ãƒ¼ã‚¿ã‚’åŒºåˆ‡ã‚‹ç¯„å›²
+	int		indat;					//ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+	int		datMax;					//ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤
+	int		datMin;					//ãƒ‡ãƒ¼ã‚¿ã®æœ€å°å€¤
+	int		redunce;				//æœ€å°ç´šã‚’æ·»å­—0ã«åˆã‚ã›ã‚‹
+	int		iMax;					//ç´šã®æ•°
+	int		cnt[NUM];				//éšç´šã”ã¨ã®é »åº¦
+	int		cntMax;					//æœ€å¤§é »åº¦
+	char	histogram[NUM][NUM];	//ã‚°ãƒ©ãƒ•æç”»
 
-	//data.txt‚Ì“Ç‚İ‚İ
+	//data.txtã®èª­ã¿è¾¼ã¿
 	inputTxtp = fopen("data.txt", "r");
 	range = openDataFile(inputTxtp);
 
@@ -268,34 +248,34 @@ int main(void)
 		return 1;
 	}
 
-	/*ƒf[ƒ^‚ÌÅ‘å’lEÅ¬’l‚ğ‹‚ß‚é*/
-	/*ƒf[ƒ^‚ğˆêƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚µ*/
+	/*ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ãƒ»æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹*/
+	/*ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚ãƒã‚¤ãƒŠãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—*/
 	inputp = fopen("data.csv", "wb");
 	readData(inputTxtp, inputp, &datMax, &datMin);
 
-	//‹‰‚Ì”(cnt‚Ìg—p”)‚ğ‹‚ß‚é(iMax)
+	//ç´šã®æ•°(cntã®ä½¿ç”¨æ•°)ã‚’æ±‚ã‚ã‚‹(iMax)
 	iMax = (datMax / range * range - datMin / range * range) / range + 1;
 	
-	//Å¬‹‰‚ğ“Yš0‚É‡‚í‚¹‚é
+	//æœ€å°ç´šã‚’æ·»å­—0ã«åˆã‚ã›ã‚‹
 	redunce = datMin / range;
 	
-	//cnt‚Ì‰Šú‰»
+	//cntã®åˆæœŸåŒ–
 	initializeCnt(iMax, cnt);
 
-	//ƒf[ƒ^‚ğˆê“x•Â‚¶‚ÄÅ‰‚©‚ç“Ç‚İ’¼‚·
+	//ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€åº¦é–‰ã˜ã¦æœ€åˆã‹ã‚‰èª­ã¿ç›´ã™
 	fclose(inputp);									
 	inputp = fopen("data.csv", "rb");
 	
-	//ƒf[ƒ^‚ÌWŒv
+	//ãƒ‡ãƒ¼ã‚¿ã®é›†è¨ˆ
 	aggregate(inputp, cnt, &cntMax, range, redunce, iMax);
 	
-	//histogram‚Ì‰Šú‰»
+	//histogramã®åˆæœŸåŒ–
 	initializeHistogram(iMax, cntMax, histogram);
 
-	//ƒqƒXƒgƒOƒ‰ƒ€‚Ìì¬
+	//ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã®ä½œæˆ
 	makeHistogram(iMax, cntMax, cnt, histogram);
 
-	//ƒqƒXƒgƒOƒ‰ƒ€•`‰æˆ—
+	//ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ æç”»å‡¦ç†
 	outputp = fopen("output.txt", "w");
 	drawHistogram(outputp, iMax, cntMax, cnt, histogram);
 	axisLabel(outputp, datMin, range, iMax);
