@@ -102,7 +102,7 @@ void initializeHistogram(int iMax, int cntMax, char histogram[][NUM])
 	
 	for (i = 0; i < iMax + 1; i++){
 		for (j = 0; j <= cntMax; j++){
-			histogram[i][j] = '+';
+			histogram[i][j] = SPACE;
 		}
 	}
 }
