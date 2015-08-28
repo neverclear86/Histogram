@@ -2,366 +2,376 @@
 #include <stdlib.h>
 #include <windows.h>
 
-#define	DEBUG
+#define  NUM      1000
+#define  SPACE    ' '
+#define  SPACENUM  4
 
-#define	NUM			1000
-#define SPACE		' '
-#define SPACENUM	4
-
-/* ƒqƒXƒgƒOƒ‰ƒ€‚ğ‘‚­		*/
+/* ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’æ›¸ã             */
 
 typedef struct {
-	int min;	//Å¬’l
-	int max;	//Å‘å’l
-} MinMax;
+  int min;  //æœ€å°å€¤
+  int max;  //æœ€å¤§å€¤
+} min_max;
 
 typedef struct {
-	FILE *inputTxtp;			//data.txt(“ü—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-	FILE *inputp;				//data.bin(ƒf[ƒ^ˆê‘Ş”ğƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-	FILE *outputp;				//output.txt(o—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-} Files ;
+  FILE *inputp;      			//data.txt(å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+  FILE *tmp_data;        	//data.bin(ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚é€€é¿ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+  FILE *outputp;        	//output.txt(å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+} files ;
 
+/*Prototype Declaration*/
+void      histogram_main(void);
+int       open_files(files *files);
+void      create_files(int deci);
+int       open_data_file( FILE *inputp);
+min_max   read_data(FILE *inputp, FILE *tmp_data);
+void      initialize_cnt(int i_max, int *cnt);
+void      initialize_histogram(int i_max, int cnt_max, char histogram[][NUM]);
+void      aggregate(FILE *tmp_data,int *cnt, int *cnt_max, int range, int redunce, int i_max);
+void      make_histogram(int i_max, int cnt_max, int cnt[], char histogram[][NUM]);
+void      writer(char chara, int num);
+void      draw_histogram(FILE *outputp, int i_max, int cnt_max, int cnt[], char histogram[][NUM]);
+void      axis_label(FILE *outputp, int datMin, int range, int i_max);
+void      close_files(files *files);
 
-/******************************************************************************************************/
-//data.txt‚ğì‚éAƒf[ƒ^‚ª–³‚¢‚Ì‚ğŒx
-void newCreate(int deci)
-{
-	FILE *inputTxtp;
-
-	if (deci == 0){			//data.txt‚ª‘¶İ‚µ‚È‚¢
-		inputTxtp = fopen("data.txt", "w");
-		fprintf(inputTxtp, "”ÍˆÍ:\n");
-		MessageBox(NULL, TEXT("[data.txt]‚ğV‹Kì¬‚µ‚Ü‚µ‚½B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
-		fclose(inputTxtp);
-	}
-	else{					//data.txt‚Éƒf[ƒ^‚ª‚È‚¢
-		MessageBox(NULL, TEXT("[data.txt]‚Éƒf[ƒ^‚ª–³‚¢‚©A”ÍˆÍ‚ª0‚Å‚·B\n[‘®]\n1s–Ú:‹æØ‚é”ÍˆÍ\n2s–ÚˆÈ~:”’l(1‚Â‚²‚Æ‚É‰üs)\n¦­”‚É‚Í–¢‘Î‰¦\n"),
-			TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
-	}
-	
-	return;
-}
-/******************************************************************************************************/
-//data.txt‚Ì“Ç‚İ‚İ
-int openDataFile( FILE *inputTxtp)
-{
-	int range;
-
-	if (inputTxtp == NULL){
-		newCreate(0);
-		return 0;
-	}
-
-	fscanf(inputTxtp, "”ÍˆÍ:%d", &range);
-	if (fscanf(inputTxtp, "”ÍˆÍ:%d", &range) == EOF){
-		newCreate(1);
-		return 0;
-	}
-
-	return range;
-}
-/******************************************************************************************************/
-//ƒf[ƒ^‚ğˆêƒtƒ@ƒCƒ‹‚É‘‚«‚İEƒf[ƒ^‚ÌÅ‘å’lAÅ¬’l‚ğ‹‚ß‚é
-MinMax readData(FILE *inputTxtp, FILE *inputp)
-{
-	int indat;
-	MinMax tmpMM;
-
-	if (fscanf(inputTxtp, "%d", &indat) != EOF){		//FirstData
-		tmpMM.min = indat;
-		tmpMM.max = indat;
-		fwrite(&indat, sizeof(int), 1, inputp);
-	}
-	else{
-		newCreate(1);
-		return;
-	}
-
-	while (fscanf(inputTxtp, "%d", &indat) != EOF){	//SecondData on and after
-		if (tmpMM.max < indat){
-			tmpMM.max = indat;
-		}
-
-		if (tmpMM.min > indat){
-			tmpMM.min = indat;
-		}
-
-		fwrite(&indat, sizeof(int), 1, inputp);
-	}
-
-	return;
-}
-/******************************************************************************************************/
-void initializeCnt(int iMax, int *cnt)
-{
-	int i;
-	
-	for (i = 0; i < iMax + 1; i++){
-		cnt[i] = 0;
-	}
-	return;
-}
-/******************************************************************************************************/
-void initializeHistogram(int iMax, int cntMax, char histogram[][NUM])
-{
-	int i;
-	int j;
-	
-	for (i = 0; i < iMax + 1; i++){
-		for (j = 0; j <= cntMax; j++){
-			histogram[i][j] = SPACE;
-		}
-	}
-}
-/******************************************************************************************************/
-void aggregate(FILE *inputp,int *cnt, int *cntMax, int range, int redunce, int iMax)
-{
-	int indat;
-	int i;
-	
-	while (fread(&indat, sizeof(int), 1, inputp)){
-		cnt[indat / range - redunce] += 1;
-	}
-	
-	*cntMax = 0;
-	for(i = 0; i < iMax; i++){
-		if(*cntMax < cnt[i]){
-			*cntMax = cnt[i];
-		}
-	}
-}
-/******************************************************************************************************/
-void makeHistogram(int iMax, int cntMax, int cnt[], char histogram[][NUM])
-{
-	int i;
-	int j;
-
-	initializeHistogram(iMax, cntMax, histogram);
-	for (i = 0; i < iMax; i++){
-		for (j = 0; j <= cntMax; j++){
-			if (cnt[i] > j){
-				histogram[i][j] = '|';
-			}
-			else if (cnt[i] == j){
-				histogram[i][j] = '_';
-			}
-		}
-	}
-}
-/******************************************************************************************************/
-void writer(char chara, int num)
-{
-	int i;
-	
-	if(chara == '_' && num <= 1){
-		chara = SPACE;
-	}
-	
-	for( i = 0; i < num; i++){
-		fprintf(outputp, "%c", chara);
-	}
-}
-/******************************************************************************************************/
-void drawHistogram(FILE *outputp, int iMax, int cntMax, int cnt[], char histogram[][NUM])
-{
-	int i, j;
-	int flag;
-	
-	// Y²
-	for (j = cntMax ; j >= 0; j--){
-		if (j % 5 == 0){
-			fprintf(outputp, "%3d", j);
-		}
-		else{
-			writer(SPACE, 3);
-		}
-		fprintf(outputp, "_|");
-
-		flag = 0;
-		// X²
-		for (i = 0; i < iMax; i++){
-			if(flag == 0){
-				writer(histogram[i][j], 1);
-			}
-			
-			if(histogram[i][j] != '_'){
-				if (j != 0){
-					writer(SPACE, SPACENUM);
-				}
-				else{
-					writer('_', SPACENUM);
-				}
-			}
-			else{
-				writer('_', SPACENUM);
-			}
-			flag = 0;
-			
-			if(cnt[i] > cnt[i + 1]){
-				writer(histogram[i][j], 1);
-				flag = 1;
-			}
-		}
-		fprintf(outputp, "\n");
-	}
-}
-/******************************************************************************************************/
-void axisLabel(FILE *outputp, int datMin, int range, int iMax)
-{
-	int i;
-	
-	while (datMin > 10000){
-		datMin = datMin / 1000;
-		range = range / 1000;
-	}
-	fprintf(outputp, "\n");
-	writer(SPACE, 5);
-	for (i = 0; i < iMax; i++){
-		fprintf(outputp, "%5d", datMin / range * range + range * i);
-	}
-	fprintf(outputp, "\n");
-	writer(SPACE, 5);
-	for (i = 0; i < iMax; i++){
-		fprintf(outputp, "   / ");
-	}
-	fprintf(outputp, "\n");
-	writer(SPACE, 5);
-	for (i = 0; i < iMax - 1; i++){
-		fprintf(outputp, "%5d", datMin / range * range + range * (i + 1) - 1);
-	}
-	
-}
-/******************************************************************************************************/
-
-/******************************************************************************************************/
-void histogramMain(void)
-{
-	int		range;					//ƒf[ƒ^‚ğ‹æØ‚é”ÍˆÍ
-	int		indat;					//ƒf[ƒ^“Ç‚İ‚İ
-//	int		datMax;					//ƒf[ƒ^‚ÌÅ‘å’l
-//	int		datMin;					//ƒf[ƒ^‚ÌÅ¬’l
-	int		redunce;				//Å¬‹‰‚ğ“Yš0‚É‡‚í‚¹‚é
-	int		iMax;					//‹‰‚Ì”
-	int		cnt[NUM];				//ŠK‹‰‚²‚Æ‚Ì•p“x
-	int		cntMax;					//Å‘å•p“x
-	char	histogram[NUM][NUM];
-
-	MinMax mainMM;
-	Files files;
-		
-	//FILE *inputTxtp;			//data.txt(“ü—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-	//FILE *inputp;				//data.bin(ƒf[ƒ^ˆê‘Ş”ğƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-	//FILE *outputp;				//output.txt(o—Íƒtƒ@ƒCƒ‹)‚Ìƒ|ƒCƒ“ƒ^
-	//if (inputTxtp = fopen("data.txt", "r") == NULL) { 
-	//	/*Failed open data.txt*/
-	//	newCreate(0);
-	//} 
-	//else if ((inputp = fopen("data.bin", "wb")) == NULL) {
-	//	/*Failed open data.bin*/
-	//	fclose(inputTxtp);
-	//} 
-	//else if ((outputp = fopen("output.txt", "w")) == NULL) {
-	//	/*Failed open output.txt*/
-	//	fclose(inputTxtp);
-	//	fclose(inputp);
-	//}
-	//else {
-	//	/*Successful open all files*/
-	//	range = openDataFile(inputTxtp);
-	//	if (range == 0){
-	//		newCreate(1);
-	//	}
-	//	/*ƒf[ƒ^‚ÌÅ‘å’lEÅ¬’l‚ğ‹‚ß‚é*/
-	//	/*ƒf[ƒ^‚ğˆêƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚µ*/
-	//	mainMM = readData(inputTxtp, inputp);
-	//	fclose(inputTxtp);
-	//	fclose(inputp);
-	//	fclose(outputp);
-	//	remove("data.bin");
-	//}
-
-	//return;
-
-	files = OpenFiles(files);
-
-	//‹‰‚Ì”(cnt‚Ìg—p”)‚ğ‹‚ß‚é(iMax)
-	iMax = (mainMM.max / range * range - mainMM.max / range * range) / range + 1;
-	
-	//Å¬‹‰‚ğ“Yš0‚É‡‚í‚¹‚é
-	redunce = mainMM.min / range;
-	
-	//cnt‚Ì‰Šú‰»
-	initializeCnt(iMax, cnt);
-
-	//ƒf[ƒ^‚ğˆê“x•Â‚¶‚ÄÅ‰‚©‚ç“Ç‚İ’¼‚·								
-	files.inputp = fopen("data.bin", "rb");
-	if(files.inputp == NULL){
-		MessageBox(NULL, TEXT("ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½"),
-				TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
-		return;
-	}
-	
-	//ƒf[ƒ^‚ÌWŒv
-	aggregate(files.inputp, cnt, &cntMax, range, redunce, iMax);
-	
-	//ƒqƒXƒgƒOƒ‰ƒ€‚Ìì¬
-	makeHistogram(iMax, cntMax, cnt, histogram);
-
-	//ƒqƒXƒgƒOƒ‰ƒ€•`‰æˆ—
-	drawHistogram(files.outputp, iMax, cntMax, cnt, histogram);
-	axisLabel(files.outputp, mainMM.max, range, iMax);
-
-	CloseFiles(files)
-	
-	MessageBox(NULL, TEXT("[output.txt]‚Éo—Í‚µ‚Ü‚µ‚½B"),
-				TEXT("ƒqƒXƒgƒOƒ‰ƒ€"), MB_OK);
-}
-
-/******************************************************************************************************/
-
-Files OpenFiles(void)
-{
-	Files tmpFiles;
-
-	if (tmpFiles.inputTxtp = fopen("data.txt", "r") == NULL) {
-		/*Failed open data.txt*/
-		newCreate(0);
-	}
-	else if ((tmpFiles.inputp = fopen("data.bin", "wb")) == NULL) {
-		/*Failed open data.bin*/
-		fclose(tmpFiles.inputTxtp);
-	}
-	else if ((tmpFiles.outputp = fopen("output.txt", "w")) == NULL) {
-		/*Failed open output.txt*/
-		fclose(tmpFiles.inputTxtp);
-		fclose(tmpFiles.inputp);
-	}
-	else {
-		/*Successful open all files*/
-		range = openDataFile(tmpFiles.inputTxtp);
-		if (range == 0){
-			newCreate(1);
-		}
-		/*ƒf[ƒ^‚ÌÅ‘å’lEÅ¬’l‚ğ‹‚ß‚é*/
-		/*ƒf[ƒ^‚ğˆêƒoƒCƒiƒŠƒtƒ@ƒCƒ‹‚É‘‚«o‚µ*/
-		mainMM = readData(tmpFiles.inputTxtp, tmpFiles.inputp);
-	}
-
-	return;
-}
-/******************************************************************************************************/
-
-void CloseFiles(Files *files){
-	fclose(files->inputTxtp);
-	fclose(files->inputp);
-	fclose(files->outputp);
-	remove("data.bin");
-}
 
 /**** main program ***********************************************************************/
 int main(void)
 {
-	histogramMain();
-	return 0;
+  histogramMain();
+  return 0;
+}
+
+/******************************************************************************************************/
+void histogram_main(void)
+{
+  int      open_flag                     //ãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ãŸã‹ã®åˆ¤æ–­
+  int      range;                        //ãƒ‡ãƒ¼ã‚¿ã‚’åŒºåˆ‡ã‚‹ç¯„å›²
+  int      indat;                        //ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
+  int      redunce;                      //æœ€å°ç´šã‚’æ·»å­—0ã«åˆã‚ã›ã‚‹
+  int      i_max;                        //ç´šã®æ•°
+  int      cnt[NUM];                     //éšç´šã”ã¨ã®é »åº¦
+  int      cnt_max;                      //æœ€å¤§é »åº¦
+  char     histogram[NUM][NUM];          //
+  min_max  mainMM;                       //
+  files    files;                        //
+
+  //FILE *inputp;      //data.txt(å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+  //FILE *tmp_data;        //data.bin(ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚é€€é¿ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+  //FILE *outputp;        //output.txt(å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«)ã®ãƒã‚¤ãƒ³ã‚¿
+  //if (inputp = fopen("data.txt", "r") == NULL) {
+  //  /*Failed open data.txt*/
+  //  create_files(0);
+  //}
+  //else if ((tmp_data = fopen("data.bin", "wb")) == NULL) {
+  //  /*Failed open data.bin*/
+  //  fclose(inputp);
+  //}
+  //else if ((outputp = fopen("output.txt", "w")) == NULL) {
+  //  /*Failed open output.txt*/
+  //  fclose(inputp);
+  //  fclose(tmp_data);
+  //}
+  //else {
+  //  /*Successful open all files*/
+  //  range = open_data_file(inputp);
+  //  if (range == 0){
+  //    create_files(1);
+  //  }
+  //  /*ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ãƒ»æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹*/
+  //  /*ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚ãƒã‚¤ãƒŠãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—*/
+  //  mainMM = read_data(inputp, tmp_data);
+  //  fclose(inputp);
+  //  fclose(tmp_data);
+  //  fclose(outputp);
+  //  remove("data.bin");
+  //}
+  //return;
+
+  //3ã¤ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãã€€ãªã‘ã‚Œã°ä½œã‚‹
+  open_flag = Openfiles();
+
+	if(open_flag){
+
+	}
+  /*ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ãƒ»æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹*/
+  /*ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚ãƒã‚¤ãƒŠãƒªãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—*/
+  mainMM = read_data(tmp_files.inputp, tmp_files.tmp_data);
+
+  //ç´šã®æ•°(cntã®ä½¿ç”¨æ•°)ã‚’æ±‚ã‚ã‚‹(i_max)
+  i_max = (mainMM.max / range * range - mainMM.max / range * range) / range + 1;
+
+  //æœ€å°ç´šã‚’æ·»å­—0ã«åˆã‚ã›ã‚‹
+  redunce = mainMM.min / range;
+
+  //cntã®åˆæœŸåŒ–
+  initialize_cnt(i_max, cnt);
+
+  //ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€åº¦é–‰ã˜ã¦æœ€åˆã‹ã‚‰èª­ã¿ç›´ã™
+  files.tmp_data = fopen("data.bin", "rb");
+  if(files.tmp_data == NULL){
+    MessageBox(NULL, TEXT("ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ"),
+        TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
+  }
+
+  //ãƒ‡ãƒ¼ã‚¿ã®é›†è¨ˆ
+  aggregate(files.tmp_data, cnt, &cnt_max, range, redunce, i_max);
+
+  //ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã®ä½œæˆ
+  make_histogram(i_max, cnt_max, cnt, histogram);
+
+  //ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ æç”»å‡¦ç†
+  draw_histogram(files.outputp, i_max, cnt_max, cnt, histogram);
+  axis_label(files.outputp, mainMM.max, range, i_max);
+
+	MessageBox(NULL, TEXT("[output.txt]ã«å‡ºåŠ›ã—ã¾ã—ãŸã€‚"),
+        TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
+
+  close_files(files)
+}
+
+/******************************************************************************************************/
+int open_files(files *files)
+{
+  int open_flag = 0;
+
+  if (files->inputp = fopen("data.txt", "r") == NULL) {
+    /*Failed open data.txt*/
+    create_files(0);
+  }
+  else if ((files->tmp_data = fopen("data.bin", "wb")) == NULL) {
+    /*Failed open data.bin*/
+    fclose(files->inputp);
+  }
+  else if ((files->outputp = fopen("output.txt", "w")) == NULL) {
+    /*Failed open output.txt*/
+    fclose(files->inputp);
+    fclose(files->tmp_data);
+  }
+  else {
+    /*Successful open all files*/
+    range = open_data_file(files->inputp);
+    if (range == 0){
+      create_files(1);
+    }
+		else{
+			open_flag = 1;
+		}
+  }
+  return open_flag;
+}
+/******************************************************************************************************/
+//data.txtã‚’ä½œã‚‹ã€ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã®ã‚’è­¦å‘Š
+void create_files(int deci)
+{
+  FILE *inputp;
+
+  if (deci == 0){          //data.txtãŒå­˜åœ¨ã—ãªã„
+    inputp = fopen("data.txt", "w");
+    fprintf(inputp, "ç¯„å›²:\n");
+    MessageBox(NULL, TEXT("[data.txt]ã‚’æ–°è¦ä½œæˆã—ã¾ã—ãŸã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+      TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
+    fclose(inputp);
+  }
+  else{                   //data.txtã«ãƒ‡ãƒ¼ã‚¿ãŒãªã„
+    MessageBox(NULL, TEXT("[data.txt]ã«ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã„ã‹ã€ç¯„å›²ãŒ0ã§ã™ã€‚\n[æ›¸å¼]\n1è¡Œç›®:åŒºåˆ‡ã‚‹ç¯„å›²\n2è¡Œç›®ä»¥é™:æ•°å€¤(1ã¤ã”ã¨ã«æ”¹è¡Œ)\nâ€»å°‘æ•°ã«ã¯æœªå¯¾å¿œâ€»\n"),
+      TEXT("ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ "), MB_OK);
+  }
+}
+/******************************************************************************************************/
+//data.txtã®èª­ã¿è¾¼ã¿
+int open_data_file( FILE *inputp)
+{
+  int range;
+
+  if (inputp == NULL){
+    create_files(0);
+    return 0;
+  }
+  fscanf(inputp, "ç¯„å›²:%d", &range);
+  if (fscanf(inputp, "ç¯„å›²:%d", &range) == EOF){
+    create_files(1);
+    return 0;
+  }
+  return range;
+}
+/******************************************************************************************************/
+//ãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã¿ãƒ»ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§å€¤ã€æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹
+min_max read_data(FILE *inputp, FILE *tmp_data)
+{
+  int indat;
+  min_max tmpMM;
+
+  if (fscanf(inputp, "%d", &indat) != EOF){    //FirstData
+    tmpMM.min = indat;
+    tmpMM.max = indat;
+    fwrite(&indat, sizeof(int), 1, tmp_data);
+  }
+  else{
+    create_files(1);
+    return;
+  }
+
+  while (fscanf(inputp, "%d", &indat) != EOF){  //SecondData on and after
+    if (tmpMM.max < indat){
+      tmpMM.max = indat;
+    }
+
+    if (tmpMM.min > indat){
+      tmpMM.min = indat;
+    }
+
+    fwrite(&indat, sizeof(int), 1, tmp_data);
+  }
+
+  return;
+}
+/******************************************************************************************************/
+void initialize_cnt(int i_max, int *cnt)
+{
+  int i;
+
+  for (i = 0; i < i_max + 1; i++){
+    cnt[i] = 0;
+  }
+  return;
+}
+/******************************************************************************************************/
+void initialize_histogram(int i_max, int cnt_max, char histogram[][NUM])
+{
+  int i;
+  int j;
+
+  for (i = 0; i < i_max + 1; i++){
+    for (j = 0; j <= cnt_max; j++){
+      histogram[i][j] = SPACE;
+    }
+  }
+}
+/******************************************************************************************************/
+void aggregate(FILE *tmp_data,int *cnt, int *cnt_max, int range, int redunce, int i_max)
+{
+  int indat;
+  int i;
+
+  while (fread(&indat, sizeof(int), 1, tmp_data)){
+    cnt[indat / range - redunce] += 1;
+  }
+
+  *cnt_max = 0;
+  for(i = 0; i < i_max; i++){
+    if(*cnt_max < cnt[i]){
+      *cnt_max = cnt[i];
+    }
+  }
+}
+/******************************************************************************************************/
+void make_histogram(int i_max, int cnt_max, int cnt[], char histogram[][NUM])
+{
+  int i;
+  int j;
+
+  initialize_histogram(i_max, cnt_max, histogram);
+  for (i = 0; i < i_max; i++){
+    for (j = 0; j <= cnt_max; j++){
+      if (cnt[i] > j){
+        histogram[i][j] = '|';
+      }
+      else if (cnt[i] == j){
+        histogram[i][j] = '_';
+      }
+    }
+  }
+}
+/******************************************************************************************************/
+void writer(char chara, int num)
+{
+  int i;
+
+  if(chara == '_' && num <= 1){
+    chara = SPACE;
+  }
+
+  for( i = 0; i < num; i++){
+    fprintf(outputp, "%c", chara);
+  }
+}
+/******************************************************************************************************/
+void draw_histogram(FILE *outputp, int i_max, int cnt_max, int cnt[], char histogram[][NUM])
+{
+  int i, j;
+  int flag;
+
+  // Yè»¸
+  for (j = cnt_max ; j >= 0; j--){
+    if (j % 5 == 0){
+      fprintf(outputp, "%3d", j);
+    }
+    else{
+      writer(SPACE, 3);
+    }
+    fprintf(outputp, "_|");
+
+    flag = 0;
+    // Xè»¸
+    for (i = 0; i < i_max; i++){
+      if(flag == 0){
+        writer(histogram[i][j], 1);
+      }
+
+      if(histogram[i][j] != '_'){
+        if (j != 0){
+          writer(SPACE, SPACENUM);
+        }
+        else{
+          writer('_', SPACENUM);
+        }
+      }
+      else{
+        writer('_', SPACENUM);
+      }
+      flag = 0;
+
+      if(cnt[i] > cnt[i + 1]){
+        writer(histogram[i][j], 1);
+        flag = 1;
+      }
+    }
+    fprintf(outputp, "\n");
+  }
+}
+/******************************************************************************************************/
+void axis_label(FILE *outputp, int datMin, int range, int i_max)
+{
+  int i;
+
+  while (datMin > 10000){
+    datMin = datMin / 1000;
+    range = range / 1000;
+  }
+  fprintf(outputp, "\n");
+  writer(SPACE, 5);
+  for (i = 0; i < i_max; i++){
+    fprintf(outputp, "%5d", datMin / range * range + range * i);
+  }
+  fprintf(outputp, "\n");
+  writer(SPACE, 5);
+  for (i = 0; i < i_max; i++){
+    fprintf(outputp, "   / ");
+  }
+  fprintf(outputp, "\n");
+  writer(SPACE, 5);
+  for (i = 0; i < i_max - 1; i++){
+    fprintf(outputp, "%5d", datMin / range * range + range * (i + 1) - 1);
+  }
+
+}
+/******************************************************************************************************/
+
+void close_files(files *files)
+{
+  fclose(files->inputp);
+  fclose(files->tmp_data);
+  fclose(files->outputp);
+  remove("data.bin");
 }
