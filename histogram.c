@@ -27,7 +27,6 @@ void      histogram_main(void);
 int       open_files(files_t *files, int *range);
 void      create_files(void);
 void      error_msg(void);
-//int       reed_range( FILE *inputp);
 int       read_data(files_t *files, min_max_t *min_max);
 void      initialize_cnt(int i_max, int *cnt);
 void      initialize_histogram(int i_max, int cnt_max, char histogram[][NUM]);
@@ -51,7 +50,6 @@ void histogram_main(void)
 {
   int         flag;                         //ファイルが開けたか・データが入力されているかの判断
   int         range;                        //データを区切るrange
-  //int         indat;                      //データ読み込み
   int         redunce;                      //最小級を添字0に合わせる
   int         i_max;                        //級の数
   int         cnt[NUM];                     //階級ごとの頻度
@@ -79,7 +77,6 @@ void histogram_main(void)
     //cntの初期化
     initialize_cnt(i_max, cnt);
 
-    //データを一度閉じて最初から読み直す
     // fclose(files.tmp_data);
     // files.tmp_data = fopen(TMP_DATA, "rb");
     // if(files.tmp_data == NULL){
@@ -102,9 +99,6 @@ void histogram_main(void)
     MessageBox(NULL, TEXT("[output.txt]を出力しました。"),
         TEXT("Histogram"), MB_OK);
   }
-  // else{
-  //   error_msg();
-  // }
   close_files(&files);
 }
 
@@ -117,7 +111,6 @@ int open_files(files_t *files, int *range)
     /*Failed open data.txt*/
     create_files();
   }
-//  else if ((files->tmp_data = fopen(TMP_DATA, "wb")) == NULL) {
     else if ((files->tmp_data = tmpfile()) == NULL ){
     /*Failed open data.bin*/
     fclose(files->inputp);
@@ -129,7 +122,6 @@ int open_files(files_t *files, int *range)
   }
   else {
     /*Successful open all files*/
-    //range = reed_range(files->inputp);
     if (fscanf(files->inputp, "range:%d", range) == EOF || *range == 0){
       error_msg();
     }
@@ -145,17 +137,11 @@ void create_files(void)
 {
   FILE *inputp;
 
-//  if (deci == 0){          //data.txtが存在しない
-    inputp = fopen(DATA_TXT, "w");
-    fprintf(inputp, "range:\n");
-    MessageBox(NULL, TEXT("[data.txt]を新規作成しました。\n[書式]\n1行目:区切る範囲\n2行目以降:数値(1つごとに改行)\n※少数には未対応※\n"),
+  inputp = fopen(DATA_TXT, "w");
+  fprintf(inputp, "range:\n");
+  MessageBox(NULL, TEXT("[data.txt]を新規作成しました。\n[書式]\n1行目:区切る範囲\n2行目以降:数値(1つごとに改行)\n※少数には未対応※\n"),
       TEXT("ヒストグラム"), MB_OK);
-    fclose(inputp);
-//  }
-  // else{                   //data.txtにデータがない 入力ミス
-  //   MessageBox(NULL, TEXT("[data.txt]にデータが無い、入力ミスが有る、またはrangeが0です。\n[書式]\n1行目:区切る範囲\n2行目以降:数値(1つごとに改行)\n※少数には未対応※\n"),
-  //     TEXT("ヒストグラム"), MB_OK);
-  // }
+  fclose(inputp);
 }
 /******************************************************************************************************/
 void error_msg(void)
@@ -164,14 +150,6 @@ void error_msg(void)
     TEXT("ヒストグラム"), MB_OK);
 }
 /******************************************************************************************************/
-//data.txtの読み込み
-// int reed_range( FILE *inputp)
-// {
-//   int range;
-//   fscanf(inputp, "range:%d", &range);
-//   return range;
-// }
-/******************************************************************************************************/
 //データを一時ファイルに書き込み・データの最大値、最小値を求める
 int read_data(files_t *files, min_max_t *min_max)
 {
@@ -179,16 +157,14 @@ int read_data(files_t *files, min_max_t *min_max)
   int ret;
   int data_flag = 0;
 
-  ret = fscanf(files->inputp, "%d", &indat);
-  //if (fscanf(files->inputp, "%d", &indat) != EOF){    //FirstData
+  ret = fscanf(files->inputp, "%d", &indat);             //FirstData
   if(ret != 0 && ret != EOF){
     min_max->min = indat;
     min_max->max = indat;
     fwrite(&indat, sizeof(int), 1, files->tmp_data);
     data_flag = 1;
 
-    ret = fscanf(files->inputp, "%d", &indat);
-    //while (fscanf(files->inputp, "%d", &indat) != EOF){  //SecondData on and after
+    ret = fscanf(files->inputp, "%d", &indat);          //SecondData on and after
     while(ret != 0 && ret != EOF){
       if (min_max->max < indat){
         min_max->max = indat;
@@ -357,5 +333,4 @@ void close_files(files_t *files)
   fclose(files->inputp);
   fclose(files->tmp_data);
   fclose(files->outputp);
-//  remove(TMP_DATA);
 }
